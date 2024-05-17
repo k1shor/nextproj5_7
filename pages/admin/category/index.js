@@ -1,22 +1,74 @@
-import { getAllCategories } from "@/pages/api/categoryAPI";
+import { deleteCategory, getAllCategories } from "@/pages/api/categoryAPI";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
-const category = () => {
+export async function getStaticProps() {
+    const categories = await getAllCategories()
+ 
+  // Props returned will be passed to the page component
+  return { props: { categories } }
+}
 
-    const [categories, setCategories] = useState([])
+const category = (props) => {
 
-    useEffect(() => {
-        getAllCategories()
-            .then(data => {
-                if (data.error) {
-                    console.log(data.error)
-                }
-                else {
-                    setCategories(data)
-                }
-            })
-    }, [])
+    // const [categories, setCategories] = useState(props.categories)
+ let {categories} = props
+
+
+    // useEffect(() => {
+    //     getAllCategories()
+    //         .then(data => {
+    //             if (data.error) {
+    //                 console.log(data.error)
+    //             }
+    //             else {
+    //                 setCategories(data)
+    //             }
+    //         })
+    // }, [])
+
+    let router = useRouter()
+
+    const handleDelete = id => e => {
+        e.preventDefault()
+        Swal.fire({
+            title: "Confirm ?",
+            text: "Are you sure you want to delete this category?",
+            icon:"question",
+            showCancelButton: true,
+            cancelButtonColor: '#dd1111',
+            confirmButtonText:"OK, Delete!",
+            cancelButtonText:"No, Don't Delete!",
+            // position:"bottom-end"
+            // timer:1000
+        }).then(result=>{
+            if(result.isConfirmed){
+                deleteCategory(id)
+                .then(data=>{
+                    if(data.error){
+                        Swal.fire('Error',data.error,'error')
+                    }
+                    else{
+                        Swal.fire('Success',data.message,'success')
+                        .then(result=>{
+                            router.refresh()
+                        })
+                        // window.location.reload()
+                    }
+                })
+            }
+            else{
+                Swal.fire('Cancelled',"Nothing is deleted",'info')
+            }
+        })
+
+
+
+
+
+    }
 
     return (<>
         <div className="p-5 text-center">
@@ -55,8 +107,9 @@ const category = () => {
                                 </td>
 
                                 <td class="px-6 py-4">
-                                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline"><button type='warning'>Edit</button></a>
-                                    <button type="delete" class="">Delete</button>
+                                    <Link href={`/admin/category/edit/${category._id}`} class="font-medium text-blue-600 dark:text-blue-500 hover:underline"><button type='warning'>Edit</button></Link>
+                                    <button type="delete" class="" 
+                                    onClick={handleDelete(category._id)}>Delete</button>
                                 </td>
                             </tr>
                         })
