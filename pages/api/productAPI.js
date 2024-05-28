@@ -6,8 +6,15 @@ export const getAllProducts = () => {
         .then(res => res.json())
         .catch(err => console.log(err))
 }
+
+export const getRelatedProducts = (id) => {
+    return fetch(`${API}/relatedproducts/${id}`)
+        .then(res => res.json())
+        .catch(err => console.log(err))
+}
+
 export const getFilteredProducts = (filter) => {
-    return fetch(`${API}/filteredproducts`, {
+    return fetch(`${API}/getfilteredproducts`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

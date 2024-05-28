@@ -22,8 +22,10 @@ const product_main = () => {
     }
 
     useEffect(()=>{
-        getFilteredProducts()
-        .then(data=>setProducts(data))
+        getFilteredProducts(filters)
+        .then(data=>{
+            // console.log(data)
+            setProducts(data)})
     },[filters])
 
     // console.log(props)

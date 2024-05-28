@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import { useEffect, useState } from "react";
 import AdminSidebar from "./components/admin/AdminSidebar";
 import { useParams } from "next/navigation";
+import StoreProvider from "./StoreProvider";
 
 export default function App({ Component, pageProps }) {
   let [isAdmin, setIsAdmin] = useState(false)
@@ -25,20 +26,23 @@ export default function App({ Component, pageProps }) {
   }, [useParams()])
 
   return <>
-    {
-      isAdmin ?
-        <div className="flex">
-          <div className="w-1/4"><AdminSidebar /></div>
-          <div className="w-3/4">
-            <Component {...pageProps} />
+    <StoreProvider>
+
+      {
+        isAdmin ?
+          <div className="flex">
+            <div className="w-1/4"><AdminSidebar /></div>
+            <div className="w-3/4">
+              <Component {...pageProps} />
+            </div>
           </div>
-        </div>
-        :
-        <>
-          <Header />
-          <Component {...pageProps} />
-        </>
-    }
+          :
+          <>
+            <Header />
+            <Component {...pageProps} />
+          </>
+      }
+    </StoreProvider>
 
   </>
 }
